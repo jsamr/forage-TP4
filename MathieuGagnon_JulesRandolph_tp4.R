@@ -3,14 +3,23 @@
 mydata = as.matrix(read.csv("turkiye-student-evaluation_generic.csv"))
 nbEvaluation <- length(mydata[,1])
 
+#number of clusters to be used
+k <- 13
+
 #create our partial data
 dataEchantillon <- mydata
 #dataEchantillon <- rbind(mydata[1:500,], mydata[801:1300,], mydata[2301:2800,])
 
+#compute proportions of evaluations for each instructor among all instructors, or each class among classes for all data
+computeProportions <- function(nbClusters, rowNumber) {
+  return (unlist(lapply(1:nbClusters, function(i) length(which(dataEchantillon[,rowNumber] == i)) / nbEvaluation )))
+}
+
 #remove the two first columns containing instructor ID and class ID
 dataWOids <- dataEchantillon[,3:33]
 
-#definition of normalizeData function
+#definition of normalizeData function. 
+#Used to normalize data so the variations of values have lesser impact (i.e. 0-3 compared to 1-5)
 normalizeData <- function(data) {
   
   #repeat
@@ -28,16 +37,12 @@ normalizeData <- function(data) {
 #usage
 normalizedData <- normalizeData(dataWOids)
 
-
-#number of clusters to be used
-k <- 3
-
-#execute kmeans algorithm
-result <- kmeans(dataWOids, k, trace = FALSE)
+#execute kmeans algorithm (from R libraries)
+result <- kmeans(normalizedData, k, trace = FALSE)
 
 ##definition generateClusterIndexes function
-generateClusterIndexes <- function(k) {
-  return (lapply(1:k, function(i) which(result$cluster == i) ))
+generateClusterIndexes <- function(nbClusters) {
+  return (lapply(1:nbClusters, function(i) which(result$cluster == i) ))
 }
 
 clusterIndexes <- generateClusterIndexes(k)
@@ -60,10 +65,18 @@ computeInstructorProportions <- function(evaluationsToInstList, evaluationCluste
   return (unlist(valuesInCommon) / length(evaluationClusters))
 }
 
-#usage (FAIRE UNE BOUCLE / LAPPLY)
-computeInstructorProportions(evaluationsToInstList, evaluationClusters[[1]])
-computeInstructorProportions(evaluationsToInstList, evaluationClusters[[2]])
-computeInstructorProportions(evaluationsToInstList, evaluationClusters[[3]])
+#compute proportions of evaluations for each instructor in all data
+proportionsOfEachInstructor <- computeProportions(k, 2)
+
+#compute ratios 
+ratios <- lapply(1:k, function(i) computeInstructorProportions(evaluationsToInstList, evaluationClusters[[i]]) / proportionsOfEachInstructor )
+
+#computeInstructorProportions(evaluationsToInstList, evaluationClusters[[1]]) / proportionsOfEachInstructor
+#computeInstructorProportions(evaluationsToInstList, evaluationClusters[[2]]) / proportionsOfEachInstructor
+#computeInstructorProportions(evaluationsToInstList, evaluationClusters[[3]]) / proportionsOfEachInstructor
+
+#si l'association cluster<-->instructor fonctionne, le calcul précedent devrait faire ressortir un instructeur dominant par cluster
+
 
 #evaluer efficacite des regroupements 
 

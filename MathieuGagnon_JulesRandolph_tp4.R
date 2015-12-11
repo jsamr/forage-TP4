@@ -4,11 +4,30 @@ mydata = as.matrix(read.csv("turkiye-student-evaluation_generic.csv"))
 nbEvaluation <- length(mydata[,1])
 
 #create our partial data
-#dataEchantillon <- mydata
-dataEchantillon <- rbind(mydata[1:500,], mydata[801:1300,], mydata[2301:2800,])
+dataEchantillon <- mydata
+#dataEchantillon <- rbind(mydata[1:500,], mydata[801:1300,], mydata[2301:2800,])
 
 #remove the two first columns containing instructor ID and class ID
 dataWOids <- dataEchantillon[,3:33]
+
+#definition of normalizeData function
+normalizeData <- function(data) {
+  
+  #repeat
+  data[,1] <- (data[,1] ) / max(data[,1])
+  
+  #attendance
+  data[,2] <- (data[,2] ) / 4
+  
+  #difficulty and Q1 to Q28
+  data[,3:31] <- (data[,3:31] - 1) / 4
+  
+  return (data)
+}
+
+#usage
+normalizedData <- normalizeData(dataWOids)
+
 
 #number of clusters to be used
 k <- 3

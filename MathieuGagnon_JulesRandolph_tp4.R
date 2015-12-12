@@ -4,10 +4,10 @@ mydata = as.matrix(read.csv("turkiye-student-evaluation_generic.csv"))
 nbEvaluation <- length(mydata[,1])
 
 #number of clusters to be used
-k <- 3
+k <- 13
 
 #target to analyse (1 for instructors, 2 for classes)
-analysisTarget <- 1
+analysisTarget <- 2
 
 ##Data Preprocessing 
   #create our partial data (if necessary)
@@ -76,9 +76,10 @@ analysisTarget <- 1
     return (unlist(lapply(1:nbClusters, function(i) length(which(dataEchantillon[,target] == i)) / nbEvaluation )))
   }
   
-  #compute proportions of evaluations for each instructor in all data
-  proportionsOfEachTarget <- computeProportionsInEntryData(k, 1)
+  #compute proportions of evaluations for each target in all data
+  proportionsOfEachTarget <- computeProportionsInEntryData(k, analysisTarget)
   
+  #compute proportions of evaluations for each target in clusters found by kmeans
   targetProportions <- computeTargetProportions(analysisTarget)
   
   #compute ratios 

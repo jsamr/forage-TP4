@@ -38,6 +38,7 @@ analysisTarget <- 1
 
 ##Kmeans execution   
   #execute kmeans algorithm (from R libraries)
+  set.seed(5)
   result <- kmeans(normalizedData, k, trace = FALSE)
 
 ##Data Analysis 
@@ -78,7 +79,7 @@ analysisTarget <- 1
   #compute proportions of evaluations for each instructor in all data
   proportionsOfEachTarget <- computeProportionsInEntryData(k, 1)
   
-  targetPorportions <- computeTargetProportions(analysisTarget)
+  targetProportions <- computeTargetProportions(analysisTarget)
   
   #compute ratios 
   ratios <- lapply(1:k, function(i) targetProportions[[i]] / proportionsOfEachTarget)

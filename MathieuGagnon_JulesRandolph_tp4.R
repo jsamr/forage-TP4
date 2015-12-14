@@ -66,7 +66,7 @@ runAnalysis <- function(k, targetIndex, preProcessedData, seed){
   targetProportions <- computeTargetProportions(targetIndex, clusterIndexes,k)
 
   #compute ratios
-  ratios <- lapply(1:k, function(i) targetProportions[[i]] / proportionsOfEachTarget)
+  ratios <- sapply(1:k, function(i) targetProportions[[i]] / proportionsOfEachTarget)
   ratios
 }
 
@@ -85,5 +85,14 @@ dataWOids <- dataEchantillon[,3:33]
 #usage
 normalizedData <- normalizeData(dataWOids)
 
-runAnalysis(13,2,normalizedData,5)
-runAnalysis(3,1,normalizedData,3)
+
+#runAnalysis(3,1,normalizedData,3)
+quests <- normalizedData[,4:31]
+metrics <-cor(normalizedData[,1:3])
+write.csv(round(cor(quests[,c(3,5,7,9,10,11,12)]),digits=2),"cor/QualiteEnseignement.csv",sep=",")
+write.csv(round(cor(quests[,c(1,2,4)]),digits=2),"cor/TransparenceConsistanceEnseignement.csv",sep=",")
+write.csv(round(cor(quests[,c(6,8)]),digits=2),"cor/QualiteRessourcesPedagogiques.csv",sep=",")
+write.csv(round(cor(quests[,c(13,14,15,17,26)]),digits=2),"cor/RigueurProfesseur.csv",sep=",")
+write.csv(round(cor(quests[,c(16,18,20,22,28)]),digits=2),"cor/ClarteEcouteNeutraliteProf.csv",sep=",")
+write.csv(round(cor(quests[,c(21,23,24,25,27)]),digits=2),"cor/ImplicationProf.csv",sep=",")
+write.csv(runAnalysis(13,2,normalizedData,5),"RatiosCoursRawNormalizedData.csv",sep=",")
